@@ -36,6 +36,7 @@
 
 import React from "react";
 import "./index.css";
+import logo from "./assets/medhalabs_logo.png";
 
 const App: React.FC = () => {
   return (
@@ -54,26 +55,24 @@ const Navbar: React.FC = () => (
   <header className="navbar">
     <div className="container navbar-inner">
       <div className="nav-left">
-        <span>🧪</span>
+        <span>
+          <img src={logo} alt="Logo" style={{ width: "120px" }} />
+        </span>
         <div>
           <div className="nav-logo">Medhā Labs</div>
-          <div className="nav-tagline">Software & innovation studio</div>
+          <div className="nav-tagline">Intelligence.Innovation.Impact</div>
         </div>
       </div>
+
       <nav className="nav-links">
-        <a href="#about" className="nav-link">
-          About
-        </a>
-        <a href="#services" className="nav-link">
-          Services
-        </a>
-        <a href="#contact" className="nav-link">
-          Contact
-        </a>
+        <a href="#about" className="nav-link">About</a>
+        <a href="#services" className="nav-link">Services</a>
+        <a href="#contact" className="nav-link">Contact</a>
       </nav>
     </div>
   </header>
 );
+
 
 const Hero: React.FC = () => (
   <section className="hero" id="home">
