@@ -8,8 +8,49 @@ import client4 from "./assets/Adimalogo.png";
 import client5 from "./assets/medhalabs_logo.png";
 
 const App: React.FC = () => {
+  const [scrollProgress, setScrollProgress] = React.useState(0);
+
+  useEffect(() => {
+    // Initialize scroll animations
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: "0px 0px -50px 0px"
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("animate-in");
+        }
+      });
+    }, observerOptions);
+
+    // Observe all sections
+    const sections = document.querySelectorAll(".section, .hero, .card, .project-card");
+    sections.forEach((section) => observer.observe(section));
+
+    // Scroll progress indicator
+    const handleScroll = () => {
+      const windowHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const scrolled = (window.scrollY / windowHeight) * 100;
+      setScrollProgress(scrolled);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      sections.forEach((section) => observer.unobserve(section));
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   return (
     <div className="app-shell">
+      <div className="animated-background"></div>
+      <div 
+        className="scroll-progress" 
+        style={{ transform: `scaleX(${scrollProgress / 100})` }}
+      ></div>
       <Navbar />
       <Hero />
       <About />
@@ -60,51 +101,70 @@ const Navbar: React.FC = () => {
   );
 };
 
-const Hero: React.FC = () => (
-  <section className="hero" id="home">
-    <div className="hero-inner">
-      <div>
-        <div className="hero-badge">
-          <span>⚙️ Medhā Labs</span>
-          <span>Software, Marketing & Brand Strategy</span>
-        </div>
-        <h1 className="hero-title">Where wisdom powers modern software.</h1>
-        <p className="hero-subtitle">
-          Medhā Labs is a software development & digital marketing studio that
-          designs, builds, and promotes robust web applications. From idea to
-          production to market presence, we turn complex problems into reliable
-          digital products with strong brand visibility.
-        </p>
-        <div className="hero-cta">
-          <button
-            className="btn btn-primary"
-            onClick={() =>
-              document
-                .getElementById("contact")
-                ?.scrollIntoView({ behavior: "smooth" })
-            }
-          >
-            Start a project →
-          </button>
-          <button
-            className="btn btn-outline"
-            onClick={() =>
-              document
-                .getElementById("services")
-                ?.scrollIntoView({ behavior: "smooth" })
-            }
-          >
-            View services
-          </button>
-        </div>
-        <div className="hero-pill">
-          <span>Web & API development</span>
-          <span>React · TypeScript · Python</span>
-          <span>Digital Marketing & Branding</span>
-        </div>
-      </div>
+const Hero: React.FC = () => {
+  const [mousePosition, setMousePosition] = React.useState({ x: 0, y: 0 });
 
-      <aside className="hero-card">
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({
+        x: (e.clientX / window.innerWidth) * 100,
+        y: (e.clientY / window.innerHeight) * 100,
+      });
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+
+  return (
+    <section className="hero" id="home">
+      <div className="hero-gradient" style={{
+        background: `radial-gradient(circle at ${mousePosition.x}% ${mousePosition.y}%, rgba(255, 184, 28, 0.1), transparent 50%)`
+      }}></div>
+      <div className="hero-inner">
+        <div className="hero-content">
+          <div className="hero-badge animate-slide-down">
+            <span>⚙️ Medhā Labs</span>
+            <span>Software, Marketing & Brand Strategy</span>
+          </div>
+          <h1 className="hero-title animate-fade-in-up">Where wisdom powers modern software.</h1>
+          <p className="hero-subtitle animate-fade-in-up-delay">
+            Medhā Labs is a software development & digital marketing studio that
+            designs, builds, and promotes robust web applications. From idea to
+            production to market presence, we turn complex problems into reliable
+            digital products with strong brand visibility.
+          </p>
+          <div className="hero-cta animate-fade-in-up-delay-2">
+            <button
+              className="btn btn-primary btn-animated"
+              onClick={() =>
+                document
+                  .getElementById("contact")
+                  ?.scrollIntoView({ behavior: "smooth" })
+              }
+            >
+              <span>Start a project</span>
+              <span className="btn-arrow">→</span>
+            </button>
+            <button
+              className="btn btn-outline btn-animated"
+              onClick={() =>
+                document
+                  .getElementById("services")
+                  ?.scrollIntoView({ behavior: "smooth" })
+              }
+            >
+              View services
+            </button>
+          </div>
+          <div className="hero-pill animate-fade-in-up-delay-3">
+            <span className="pill-item">Web & API development</span>
+            <span className="pill-item">React · TypeScript · Python</span>
+            <span className="pill-item">Digital Marketing & Branding</span>
+          </div>
+        </div>
+
+        <aside className="hero-card animate-scale-in">
         <div className="hero-card-header">
           <div>
             <div className="hero-chip">Full-stack services</div>
@@ -139,7 +199,8 @@ const Hero: React.FC = () => (
       </aside>
     </div>
   </section>
-);
+  );
+};
 
 const About: React.FC = () => (
   <section className="section" id="about">
@@ -290,36 +351,22 @@ const Services: React.FC = () => (
     </div>
 
     <div className="grid-3">
-      <ServiceCard
-        icon="💻"
-        title="Web applications"
-        body="Responsive, maintainable web apps built with React and TypeScript, backed by robust APIs."
-      />
-      <ServiceCard
-        icon="🔌"
-        title="APIs & integrations"
-        body="REST/GraphQL APIs, third‑party integrations, and internal tools that connect your systems."
-      />
-      <ServiceCard
-        icon="☁️"
-        title="Cloud‑ready backends"
-        body="Scalable backends on AWS, Azure or other cloud providers, with CI/CD and monitoring in place."
-      />
-      <ServiceCard
-        icon="🧪"
-        title="Prototypes & MVPs"
-        body="Launch quickly with well‑structured MVPs you can iterate on, not throw away."
-      />
-      <ServiceCard
-        icon="🛠️"
-        title="Modernisation"
-        body="Refactor legacy apps, improve performance, and bring older systems to modern stacks."
-      />
-      <ServiceCard
-        icon="📈"
-        title="Ongoing development"
-        body="Dedicated capacity for continuous improvements, new features and maintenance."
-      />
+      {[
+        { icon: "💻", title: "Web applications", body: "Responsive, maintainable web apps built with React and TypeScript, backed by robust APIs." },
+        { icon: "🔌", title: "APIs & integrations", body: "REST/GraphQL APIs, third‑party integrations, and internal tools that connect your systems." },
+        { icon: "☁️", title: "Cloud‑ready backends", body: "Scalable backends on AWS, Azure or other cloud providers, with CI/CD and monitoring in place." },
+        { icon: "🧪", title: "Prototypes & MVPs", body: "Launch quickly with well‑structured MVPs you can iterate on, not throw away." },
+        { icon: "🛠️", title: "Modernisation", body: "Refactor legacy apps, improve performance, and bring older systems to modern stacks." },
+        { icon: "📈", title: "Ongoing development", body: "Dedicated capacity for continuous improvements, new features and maintenance." },
+      ].map((service, index) => (
+        <div key={index} style={{ animationDelay: `${index * 0.1}s` }}>
+          <ServiceCard
+            icon={service.icon}
+            title={service.title}
+            body={service.body}
+          />
+        </div>
+      ))}
     </div>
   </section>
 );
@@ -397,13 +444,22 @@ type ServiceCardProps = {
   body: string;
 };
 
-const ServiceCard: React.FC<ServiceCardProps> = ({ icon, title, body }) => (
-  <article className="card">
-    <div className="card-icon">{icon}</div>
-    <h3 className="card-title">{title}</h3>
-    <p className="card-body">{body}</p>
-  </article>
-);
+const ServiceCard: React.FC<ServiceCardProps> = ({ icon, title, body }) => {
+  const [isHovered, setIsHovered] = React.useState(false);
+
+  return (
+    <article 
+      className="card card-animated"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <div className={`card-icon ${isHovered ? "icon-bounce" : ""}`}>{icon}</div>
+      <h3 className="card-title">{title}</h3>
+      <p className="card-body">{body}</p>
+      <div className={`card-hover-effect ${isHovered ? "active" : ""}`}></div>
+    </article>
+  );
+};
 
 
 const Projects: React.FC = () => {
