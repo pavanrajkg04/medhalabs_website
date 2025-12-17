@@ -39,8 +39,8 @@ const Navbar: React.FC = () => {
     <header className={`navbar ${scrolled ? "scrolled" : ""}`}>
       <div className="container navbar-inner">
         <div className="nav-left">
-          <span>
-            <img src={logo} alt="Logo" style={{ width: "120px" }} loading="eager" width="120" height="40" />
+          <span className="nav-logo-wrapper">
+            <img src={logo} alt="Medhā Labs Logo" className="nav-logo-img" loading="eager" />
           </span>
           <div>
             <div className="nav-logo">Medhā Labs</div>
